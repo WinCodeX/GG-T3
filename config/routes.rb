@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  root "pages#home"
+  get "/dashboard", to: "pages#dashboard"
   devise_for :users
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
@@ -9,3 +11,5 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   # root "posts#index"
 end
+
+
