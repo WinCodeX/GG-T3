@@ -11,6 +11,16 @@ class Users::RegistrationsController < Devise::RegistrationsController
     devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
   end
 
+  
+    def update_resource(resource, params)
+      if params[:password].blank? && params[:password_confirmation].blank?
+        resource.update_without_password(params)
+      else
+        super
+      end
+    end
+  
+  
   # GET /resource/sign_up
   # def new
   #   super
