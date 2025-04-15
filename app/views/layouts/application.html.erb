@@ -8,12 +8,14 @@
 
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
-  </head>
+    <link href="https://fonts.googleapis.com/css2?family=Jost:wght@500&display=swap" rel="stylesheet">
+    </head>
 
   <body>
   <p class="notice"><%= notice %></p>
   <p class="alert"><%= alert %></p>
   <%= render "shared/nav" %>
+
     <%= yield %>
   </body>
 </html>

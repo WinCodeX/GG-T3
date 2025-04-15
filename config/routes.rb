@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
   root "pages#home"
+  resources :packages, only: [:create]
+
   get "/dashboard", to: "pages#dashboard"
   devise_for :users, controllers: {
   registrations: "users/registrations"
