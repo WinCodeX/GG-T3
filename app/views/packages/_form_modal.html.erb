@@ -1,64 +1,103 @@
-<div class="form-container fade-in">
-  <div id="package-form-step-1">
-    <h2>Step 1: Recipient Information</h2>
-    <input type="text" id="recipient_name" placeholder="Recipient Name" required>
-    <input type="text" id="recipient_phone" placeholder="Recipient Phone" required>
-    <button type="button" onclick="nextStep(2)">Next</button>
-  </div>
+<div data-controller="modal" data-modal-step-value="1" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+  <div class="bg-white w-full max-w-lg p-6 rounded shadow-lg relative">
+    <button data-action="click->modal#close" class="absolute top-2 right-2 text-gray-500 hover:text-black text-xl">&times;</button>
 
-  <div id="package-form-step-2" class="hidden">
-    <h2>Step 2: Package Details</h2>
-    <input type="text" id="package_description" placeholder="What are you sending?" required>
-    <input type="number" id="package_value" placeholder="Value of the Package" required>
-    <button onclick="nextStep(3)">Next</button>
-  </div>
+    <!-- Step 1: Recipient -->
+    <div data-modal-target="step" data-step="1">
+      <h2 class="text-lg font-bold mb-4">Step 1: Recipient Info</h2>
+      <div class="mb-4">
+        <label class="block mb-1">Recipient Name</label>
+        <input type="text" class="w-full border px-3 py-2 rounded" data-modal-target="recipientName">
+      </div>
+      <div class="mb-4">
+        <label class="block mb-1">Recipient Phone</label>
+        <input type="text" class="w-full border px-3 py-2 rounded" data-modal-target="recipientPhone">
+      </div>
+      <button data-action="click->modal#next" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+    </div>
 
-  <div id="package-form-step-3" class="hidden">
-    <h2>Step 3: Sender Agent</h2>
-    <select id="sender_agent_id" onchange="updatePrice()">
-      <% Agent.all.each do |agent| %>
-        <option value="<%= agent.id %>"><%= agent.name %></option>
-      <% end %>
-    </select>
-    <button onclick="nextStep(4)">Next</button>
-  </div>
+    <!-- Step 2: Sender Agent -->
+    <div data-modal-target="step" data-step="2" class="hidden">
+      <h2 class="text-lg font-bold mb-4">Step 2: Sender Agent</h2>
+      <select class="w-full border px-3 py-2 rounded mb-4" data-modal-target="senderAgent">
+        <% Agent.all.each do |agent| %>
+          <option value="<%= agent.id %>"><%= agent.name %></option>
+        <% end %>
+      </select>
+      <div class="flex justify-between">
+        <button data-action="click->modal#back" class="text-gray-600">Back</button>
+        <button data-action="click->modal#next" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+      </div>
+    </div>
 
-  <div id="package-form-step-4" class="hidden">
-    <h2>Step 4: Delivery Type</h2>
-    <select id="delivery_type" onchange="updateDeliveryDetails()">
-      <option value="">Choose an Option</option>
-      <option value="door_delivery">Door Delivery</option>
-      <option value="agent_pickup">Agent Pickup</option>
-      <option value="parcel_delivery">Parcel Delivery</option>
-    </select>
-    <button onclick="nextStep(5)">Next</button>
-  </div>
+    <!-- Step 3: Delivery Type -->
+    <div data-modal-target="step" data-step="3" class="hidden">
+      <h2 class="text-lg font-bold mb-4">Step 3: Delivery Type</h2>
 
-  <!-- Dynamic Inputs Based on Delivery Type -->
-  <div id="door_delivery_fields" class="hidden">
-    <input type="text" id="exact_location" placeholder="Exact Location">
-  </div>
+      <div class="mb-4">
+        <label class="block mb-1">Select Delivery Type</label>
+        <select class="w-full border px-3 py-2 rounded"
+                data-modal-target="deliveryType"
+                data-action="change->modal#selectType">
+          <option disabled selected value="">-- Select Type --</option>
+          <option value="door">Door Delivery</option>
+          <option value="agent">Agent Pickup</option>
+          <option value="parcel">Parcel Delivery</option>
+        </select>
+      </div>
 
-  <div id="agent_pickup_fields" class="hidden">
-    <select id="receiver_agent_id"  onchange="updatePrice()">
-      <% Agent.all.each do |agent| %> 
-        <option value="<%= agent.id %>"><%= agent.name %></option>
-      <% end %>
-    </select>
-  </div>
+      <div class="flex justify-between">
+        <button data-action="click->modal#back" class="text-gray-600">Back</button>
+        <button data-action="click->modal#next" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+      </div>
+    </div>
 
-  <div id="parcel_delivery_fields" class="hidden">
-    <input type="text" id="courier_service" placeholder="Courier Service">
-    <input type="text" id="destination" placeholder="Destination">
-  </div>
+    <!-- Step 4: Conditional Fields -->
+    <div data-modal-target="step" data-step="4" class="hidden">
+      <h2 class="text-lg font-bold mb-4">Step 4: Delivery Details</h2>
 
-  <!-- Display Cost Before Submission -->
-  <div class="form-group">
-    <p>Estimated Delivery Cost: <span id="delivery-cost">Ksh 0.00</span></p>
-  </div>
+      <!-- Door -->
+      <div data-modal-target="doorFields" class="hidden mb-4">
+        <label class="block mb-1">Exact Location</label>
+        <textarea class="w-full border px-3 py-2 rounded" data-modal-target="location"></textarea>
+      </div>
 
-  <div id="package-form-step-5" class="hidden">
-    <h2>Final Step: Submit & Pay</h2>
-    <button onclick="submitPackage()">Submit & Pay</button>
+      <!-- Agent -->
+      <div data-modal-target="agentFields" class="hidden mb-4">
+        <label class="block mb-1">Receiver Agent</label>
+        <select class="w-full border px-3 py-2 rounded" data-modal-target="receiverAgent">
+          <% Agent.all.each do |agent| %>
+            <option value="<%= agent.id %>"><%= agent.name %></option>
+          <% end %>
+        </select>
+      </div>
+
+      <!-- Parcel -->
+      <div data-modal-target="parcelFields" class="hidden mb-4 space-y-3">
+        <div>
+          <label class="block mb-1">Courier Service</label>
+          <input type="text" class="w-full border px-3 py-2 rounded" data-modal-target="courier">
+        </div>
+        <div>
+          <label class="block mb-1">Destination</label>
+          <input type="text" class="w-full border px-3 py-2 rounded" data-modal-target="destination">
+        </div>
+      </div>
+
+      <div class="flex justify-between">
+        <button data-action="click->modal#back" class="text-gray-600">Back</button>
+        <button data-action="click->modal#next" class="bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+      </div>
+    </div>
+
+    <!-- Step 5: Confirm + Submit -->
+    <div data-modal-target="step" data-step="5" class="hidden">
+      <h2 class="text-lg font-bold mb-4">Step 5: Confirm & Submit</h2>
+      <p class="mb-4 text-sm text-gray-600">Submitting will create the package and mark it as <strong>pending_unpaid</strong>.</p>
+      <div class="flex justify-between">
+        <button data-action="click->modal#back" class="text-gray-600">Back</button>
+        <button data-action="click->modal#submit" class="bg-green-600 text-white px-4 py-2 rounded">Submit</button>
+      </div>
+    </div>
   </div>
 </div>

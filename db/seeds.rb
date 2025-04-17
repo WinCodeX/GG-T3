@@ -7,3 +7,5 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+Agent.create!(name: "WOA Tech Cyber", phone: "0712345678", station: "Nairobi-West", zone: "Nairobi")
+Agent.create!(name: "Port favour", phone: "0723456789", station: "Mombasa-Port", zone: "Mombasa")
